@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios';
+import moment from 'moment';
 
-function App() {
+import { /*useEffect, */ useState } from "react";
+
+const App = () => {
+
+  const [msg, setMsg] = useState("Starting");
+
+  const addOne = () => {
+    // console.log("adding one");
+    const data = {new_message: `now it's ${moment().format('HH:MM:ss')}`};
+    axios.post('/.netlify/functions/store_row', data)
+    .then((response) => {
+      // console.log(response.data);
+      setMsg(`Function reply: < ${response.data.message} >`);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+  }
+
+  const getLast = () => {
+    // console.log("getting last one");
+    axios.post('/.netlify/functions/get_last_row')
+    .then((response) => {
+      // console.log(response.data);
+      setMsg(`Function reply: < ${response.data.last_row} >`);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <button onClick={addOne}>
+        Add row
+      </button>
+      <button onClick={getLast}>
+        Read last
+      </button>
+      <div>
+        {msg}
+      </div>
+    </>
+  )
 }
 
-export default App;
+export default App
